@@ -87,6 +87,7 @@ body {
 .memory-bg { background: linear-gradient(135deg, #e9d5ff, #a855f7); }
 .mine-bg { background: linear-gradient(135deg, #cbd5e1, #64748b); }
 .gravity-bg { background: linear-gradient(135deg, #c7d2fe, #4f46e5); }
+.race-bg { background: linear-gradient(135deg, #fef08a, #eab308); }
 .flappy-bg { background: linear-gradient(135deg, #bbf7d0, #22c55e); }
 .puzzle-bg { background: linear-gradient(135deg, #fed7aa, #f97316); }
 
