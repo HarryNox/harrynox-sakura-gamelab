@@ -3,21 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Platformer</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>GameLab Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="game-container">
-        <canvas id="gameCanvas" width="800" height="450"></canvas>
-    </div>
-    <div class="ui">
-        <h2>ブロックジャンプ！</h2>
-        <div class="controls">操作: [←] [→] で移動、 [スペース] または [↑] でジャンプ</div>
-    </div>
-    <script src="./script.js"></script>
+    <header>
+        <h1>GameLab Portal</h1>
+        <p>遊びたいミニゲームを選んでね！</p>
+    </header>
+
+    <main class="game-grid">
+        <a href="./frog_jump/index.html" class="game-card">
+            <div class="icon frog-bg">🐸</div>
+            <div class="info">
+                <h3>フロッグジャンプ</h3>
+                <p>全10ステージクリアを目指そう！</p>
+            </div>
+        </a>
+        <a href="./breakout/index.html" class="game-card">
+            <div class="icon breakout-bg">🧱</div>
+            <div class="info">
+                <h3>ブロック崩し</h3>
+                <p>定番のブロック崩し</p>
+            </div>
+        </a>
+        <a href="./snake/index.html" class="game-card">
+            <div class="icon snake-bg">🐍</div>
+            <div class="info">
+                <h3>スネークゲーム</h3>
+                <p>リンゴを集めて成長しよう</p>
+            </div>
+        </a>
+        <a href="./memory/index.html" class="game-card">
+            <div class="icon memory-bg">🎴</div>
+            <div class="info">
+                <h3>神経衰弱</h3>
+                <p>記憶力を試そう</p>
+            </div>
+        </a>
+        <a href="./minesweeper/index.html" class="game-card">
+            <div class="icon mine-bg">💣</div>
+            <div class="info">
+                <h3>マインスイーパー</h3>
+                <p>地雷を避けよう</p>
+            </div>
+        </a>
+        <a href="./tictactoe/index.html" class="game-card">
+            <div class="icon ttt-bg">❌⭕</div>
+            <div class="info">
+                <h3>〇✕ゲーム</h3>
+                <p>シンプルな対戦</p>
+            </div>
+        </a>
+    </main>
 </body>
 </html>
