@@ -13,7 +13,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* overflow: hidden; を削除してスクロール可能にする */
     overflow-x: hidden;
 }
 
@@ -30,13 +29,14 @@ body {
 .home-screen {
     flex: 1;
     display: grid;
+    /* デフォルト（PC）は4列 */
     grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: min-content;
     align-content: start;
-    gap: 25px 15px;
+    gap: 40px 30px;
     width: 100%;
-    max-width: 400px;
-    padding: 30px 20px;
+    max-width: 800px;
+    padding: 40px 20px;
 }
 
 .app-icon {
@@ -55,24 +55,26 @@ body {
 }
 
 .icon-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
+    /* PCでのアイコンサイズ */
+    width: 80px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 32px;
+    font-size: 40px; /* 絵文字用 */
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    /* 画像をきれいに表示するための設定 */
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     position: relative;
-    /* iOSのスクワークル（角丸）を再現 */
+    /* iOSの角丸（スクワークル）風 */
     border-radius: 22.5%;
 }
 
 .app-name {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 500;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -82,42 +84,34 @@ body {
     width: 100%;
 }
 
-/* アイコン背景色 */
-.frog-bg { background: linear-gradient(135deg, #a7f3d0, #10b981); }
-.breakout-bg { background: linear-gradient(135deg, #fecaca, #ef4444); }
-.snake-bg { background: linear-gradient(135deg, #fef08a, #eab308); }
-.memory-bg { background: linear-gradient(135deg, #e9d5ff, #a855f7); }
-.mine-bg { background: linear-gradient(135deg, #cbd5e1, #64748b); }
-.gravity-bg { background: linear-gradient(135deg, #c7d2fe, #4f46e5); }
-.race-bg { background: linear-gradient(135deg, #fef08a, #eab308); }
-.flappy-bg { background: linear-gradient(135deg, #bbf7d0, #22c55e); }
-.puzzle-bg { background: linear-gradient(135deg, #fed7aa, #f97316); }
+/* スマホ用レイアウト (画面幅が600px以下の場合) */
+@media screen and (max-width: 600px) {
+    .home-screen {
+        /* スマホは2列 */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px 20px;
+        padding: 30px 15px;
+    }
 
-.dock-container {
-    width: 100%;
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+    .icon-img {
+        /* スマホでは2列なので大きめに表示 */
+        width: 100px;
+        height: 100px;
+        font-size: 50px;
+    }
+
+    .app-name {
+        font-size: 16px;
+    }
 }
 
-.dock {
-    width: 100%;
-    max-width: 380px;
-    height: 85px;
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(20px);
-    border-radius: 25px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-}
-
-.dock .app-name {
-    display: none; /* Dock内のアイコンには名前を表示しない */
-}
-
-.dock .icon-img {
-    margin-bottom: 0;
-}
+/* アイコン背景色（デフォルトの絵文字用） */
+.frog-bg { background-color: #10b981; background-image: linear-gradient(135deg, #a7f3d0, #10b981); }
+.breakout-bg { background-color: #ef4444; background-image: linear-gradient(135deg, #fecaca, #ef4444); }
+.snake-bg { background-color: #eab308; background-image: linear-gradient(135deg, #fef08a, #eab308); }
+.memory-bg { background-color: #a855f7; background-image: linear-gradient(135deg, #e9d5ff, #a855f7); }
+.mine-bg { background-color: #64748b; background-image: linear-gradient(135deg, #cbd5e1, #64748b); }
+.gravity-bg { background-color: #4f46e5; background-image: linear-gradient(135deg, #c7d2fe, #4f46e5); }
+.race-bg { background-color: #eab308; background-image: linear-gradient(135deg, #fef08a, #eab308); }
+.flappy-bg { background-color: #22c55e; background-image: linear-gradient(135deg, #bbf7d0, #22c55e); }
+.puzzle-bg { background-color: #f97316; background-image: linear-gradient(135deg, #fed7aa, #f97316); }
