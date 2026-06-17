@@ -3,59 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameLab Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <title>GameLab iOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <header>
-        <h1>GameLab Portal</h1>
-        <p>遊びたいミニゲームを選んでね！</p>
-    </header>
+    <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 🔋</span>
+    </div>
 
-    <main class="game-grid">
-        <a href="./frog_jump/index.html" class="game-card">
-            <div class="icon frog-bg">🐸</div>
-            <div class="info">
-                <h3>フロッグジャンプ</h3>
-                <p>全10ステージクリアを目指そう！</p>
-            </div>
+    <main class="home-screen">
+        <a href="./frog_jump/index.html" class="app-icon">
+            <div class="icon-img frog-bg">🐸</div>
+            <span class="app-name">フロッグ</span>
         </a>
-        <a href="./breakout/index.html" class="game-card">
-            <div class="icon breakout-bg">🧱</div>
-            <div class="info">
-                <h3>ブロック崩し</h3>
-                <p>定番のブロック崩し</p>
-            </div>
+        <a href="./breakout/index.html" class="app-icon">
+            <div class="icon-img breakout-bg">🧱</div>
+            <span class="app-name">ブロック崩し</span>
         </a>
-        <a href="./snake/index.html" class="game-card">
-            <div class="icon snake-bg">🐍</div>
-            <div class="info">
-                <h3>スネークゲーム</h3>
-                <p>リンゴを集めて成長しよう</p>
-            </div>
+        <a href="./snake/index.html" class="app-icon">
+            <div class="icon-img snake-bg">🐍</div>
+            <span class="app-name">スネーク</span>
         </a>
-        <a href="./memory/index.html" class="game-card">
-            <div class="icon memory-bg">🎴</div>
-            <div class="info">
-                <h3>神経衰弱</h3>
-                <p>記憶力を試そう</p>
-            </div>
+        <a href="./memory/index.html" class="app-icon">
+            <div class="icon-img memory-bg">🎴</div>
+            <span class="app-name">神経衰弱</span>
         </a>
-        <a href="./minesweeper/index.html" class="game-card">
-            <div class="icon mine-bg">💣</div>
-            <div class="info">
-                <h3>マインスイーパー</h3>
-                <p>地雷を避けよう</p>
-            </div>
+        <a href="./minesweeper/index.html" class="app-icon">
+            <div class="icon-img mine-bg">💣</div>
+            <span class="app-name">マイン</span>
         </a>
-        <a href="./tictactoe/index.html" class="game-card">
-            <div class="icon ttt-bg">❌⭕</div>
-            <div class="info">
-                <h3>〇✕ゲーム</h3>
-                <p>シンプルな対戦</p>
-            </div>
+        <a href="./gravity_runner/index.html" class="app-icon">
+            <div class="icon-img gravity-bg">🔃</div>
+            <span class="app-name">グラビティ</span>
+        </a>
+        <a href="./flappy_bird/index.html" class="app-icon">
+            <div class="icon-img flappy-bg">🐦</div>
+            <span class="app-name">フラッピー</span>
         </a>
     </main>
+
+    <div class="dock-container">
+        <div class="dock">
+            <!-- Settings or phone app icons could go here -->
+            <div class="app-icon">
+                <div class="icon-img" style="background-color: #34d399; font-size: 24px;">📞</div>
+            </div>
+            <div class="app-icon">
+                <div class="icon-img" style="background-color: #60a5fa; font-size: 24px;">🌐</div>
+            </div>
+            <div class="app-icon">
+                <div class="icon-img" style="background-color: #f87171; font-size: 24px;">🎵</div>
+            </div>
+            <div class="app-icon">
+                <div class="icon-img" style="background-color: #fb923c; font-size: 24px;">⚙️</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

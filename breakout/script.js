@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 
 let score = 0;
 let lives = 3;
+let gameStarted = false;
 
 // パドル
 const paddleWidth = 100;
@@ -38,11 +39,13 @@ let leftPressed = false;
 document.addEventListener("keydown", (e) => {
     if(e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
     else if(e.key === "Left" || e.key === "ArrowLeft") leftPressed = true;
+    if(e.key === " " || e.key === "Enter") gameStarted = true;
 });
 document.addEventListener("keyup", (e) => {
     if(e.key === "Right" || e.key === "ArrowRight") rightPressed = false;
     else if(e.key === "Left" || e.key === "ArrowLeft") leftPressed = false;
 });
+document.addEventListener("click", () => gameStarted = true);
 
 function collisionDetection() {
     for (let c = 0; c < brickColumnCount; c++) {
@@ -106,7 +109,9 @@ function drawScore() {
 function drawLives() {
     ctx.font = "16px Inter";
     ctx.fillStyle = "#fff";
-    ctx.fillText("Lives: " + lives, canvas.width - 80, 30);
+    let hearts = "";
+    for(let i=0; i<lives; i++) hearts += "❤️";
+    ctx.fillText("Lives: " + hearts, canvas.width - 120, 30);
 }
 
 function draw() {
@@ -116,39 +121,49 @@ function draw() {
     drawPaddle();
     drawScore();
     drawLives();
-    collisionDetection();
 
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-    }
-    if (y + dy < ballRadius) {
-        dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius) {
-        if (x > paddleX && x < paddleX + paddleWidth) {
+    if (!gameStarted) {
+        ctx.font = "24px Inter";
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.fillText("クリックまたはスペースキーでスタート", canvas.width / 2, canvas.height / 2 + 50);
+        ctx.textAlign = "left";
+    } else {
+        collisionDetection();
+
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+            dx = -dx;
+        }
+        if (y + dy < ballRadius) {
             dy = -dy;
-        } else {
-            lives--;
-            if (!lives) {
-                alert("ゲームオーバー");
-                document.location.reload();
+        } else if (y + dy > canvas.height - ballRadius) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+                dy = -dy;
             } else {
-                x = canvas.width / 2;
-                y = canvas.height - 30;
-                dx = 4;
-                dy = -4;
-                paddleX = (canvas.width - paddleWidth) / 2;
+                lives--;
+                if (!lives) {
+                    alert("ゲームオーバー");
+                    document.location.reload();
+                } else {
+                    x = canvas.width / 2;
+                    y = canvas.height - 30;
+                    dx = 4;
+                    dy = -4;
+                    paddleX = (canvas.width - paddleWidth) / 2;
+                    gameStarted = false;
+                }
             }
         }
-    }
 
-    if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 7;
-    } else if (leftPressed && paddleX > 0) {
-        paddleX -= 7;
-    }
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
+            paddleX += 7;
+        } else if (leftPressed && paddleX > 0) {
+            paddleX -= 7;
+        }
 
-    x += dx;
-    y += dy;
+        x += dx;
+        y += dy;
+    }
     requestAnimationFrame(draw);
 }
 

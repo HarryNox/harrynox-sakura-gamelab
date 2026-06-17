@@ -82,7 +82,8 @@ const stages = [
     // Stage 7 (長いジャンプ)
     [
         { x: 0, y: 410, width: 150, height: 40, color: '#2ed573' },
-        { x: 350, y: 410, width: 100, height: 40, color: '#ffa502' },
+        { x: 250, y: 380, width: 100, height: 20, color: '#ffa502' },
+        { x: 450, y: 340, width: 100, height: 20, color: '#ffa502' },
         { x: 650, y: 300, width: 150, height: 20, color: '#1e90ff' }
     ],
     // Stage 8 (壁登り風)

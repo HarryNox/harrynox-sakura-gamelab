@@ -45,6 +45,13 @@ function createBoard() {
             squares[i].setAttribute('data', total);
         }
     }
+
+    // 最初からいくつか開いている状態にする（ランダムな0のマスを開く）
+    let zeroCells = squares.filter(sq => sq.classList.contains('valid') && sq.getAttribute('data') == '0');
+    if(zeroCells.length > 0) {
+        let randomZero = zeroCells[Math.floor(Math.random() * zeroCells.length)];
+        click(randomZero);
+    }
 }
 
 function addFlag(square) {
