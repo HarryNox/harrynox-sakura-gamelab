@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI Battle Quest — MBTIタイプで冒険するRPG</title>
+  <meta name="description" content="MBTIタイプのキャラクターを選んで冒険するターン制バトルRPG。16種類のMBTIタイプが持つ個性と相性がゲームに影響する！">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Starfield Background (always visible) -->
+  <div id="starfield"></div>
+
+  <!-- Gear Button (always visible) -->
+  <button id="gear-btn" title="設定">⚙️</button>
+
+  <!-- ================================================
+       SCREEN 1: TITLE
+       ================================================ -->
+  <div id="screen-title" class="screen active">
+    <div class="title-logo">
+      <h1>MBTI<br>Battle Quest</h1>
+      <div class="subtitle">MBTIタイプで冒険する RPG</div>
+      <div class="mbti-badge">16 PERSONALITIES × FANTASY RPG</div>
+    </div>
+
+    <div class="title-buttons">
+      <button id="btn-adventure" class="btn btn-gold btn-lg btn-full">
+        ⚔️ 冒険に出かける
+      </button>
+      <button id="btn-compatibility" class="btn btn-outline btn-full">
+        💞 相性を見る
+      </button>
+      <button id="btn-credits" class="btn btn-outline btn-full">
+        📜 クレジット
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 2: CHARACTER SELECT
+       ================================================ -->
+  <div id="screen-char-select" class="screen">
+    <div class="char-select-title">⚔️ 勇者たちを選びましょう</div>
+
+    <!-- Party Slots -->
+    <div class="party-slots" id="party-slots"></div>
+
+    <!-- MBTI List + Info Panel -->
+    <div class="mbti-select-container">
+      <div class="mbti-list" id="mbti-list"></div>
+
+      <!-- Char Info Panel -->
+      <div class="char-info-panel" id="char-info-panel">
+        <div class="char-info-sprite-wrap" id="char-info-sprite-wrap">
+          <div class="char-info-sprite" style="width:90px;height:90px;margin:0 auto;background:rgba(255,255,255,0.05);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:2rem">?</div>
+        </div>
+        <div class="char-info-mbti" id="char-info-mbti" style="font-size:1.2rem;font-weight:900;text-align:center">--</div>
+        <div class="char-info-name" id="char-info-name">MBTIを選択</div>
+        <div class="char-info-desc" id="char-info-desc" style="font-size:0.72rem;line-height:1.6;color:var(--text-secondary);margin-bottom:8px;min-height:60px">
+          左のリストからキャラクターを選ぶと詳細が表示されます
+        </div>
+        <div class="char-info-stats">
+          <div class="stat-row">
+            <span class="stat-label">HP</span>
+            <div class="stat-bar-wrap"><div class="stat-bar" id="stat-bar-hp" style="width:50%"></div></div>
+            <span class="stat-val" id="stat-val-hp">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">ATK</span>
+            <div class="stat-bar-wrap"><div class="stat-bar" id="stat-bar-atk" style="width:50%"></div></div>
+            <span class="stat-val" id="stat-val-atk">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">DEF</span>
+            <div class="stat-bar-wrap"><div class="stat-bar" id="stat-bar-def" style="width:50%"></div></div>
+            <span class="stat-val" id="stat-val-def">—</span>
+          </div>
+        </div>
+        <div class="char-info-special" style="margin-top:10px">
+          <div class="special-label">✨ 特技</div>
+          <div class="special-name" id="char-special-name">—</div>
+          <div class="special-desc" id="char-special-desc">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Depart Button -->
+    <div class="depart-area">
+      <button id="btn-depart" class="btn btn-gold btn-lg hidden" style="min-width:220px">
+        🗺️ 出発！！
+      </button>
+    </div>
+
+    <!-- Back Button -->
+    <div style="margin-top:12px">
+      <button class="btn btn-outline btn-sm" onclick="showScreen('title')">← タイトルへ戻る</button>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 3: BATTLE
+       ================================================ -->
+  <div id="screen-battle" class="screen">
+
+    <!-- Round Header -->
+    <div class="battle-header">
+      <div class="battle-round-label" id="battle-round-label">ROUND 1 / 5</div>
+      <div class="battle-round-pips" id="round-pips"></div>
+    </div>
+
+    <!-- Enemy Area -->
+    <div class="enemy-area" id="enemy-area"></div>
+
+    <!-- Battle Log -->
+    <div class="battle-log-wrap" id="battle-log"></div>
+
+    <!-- Party Area -->
+    <div class="party-area" id="party-area"></div>
+
+    <!-- Compat Event Popup Area (shows during battle) -->
+    <div id="compat-event-area"></div>
+
+    <!-- Click-to-Continue Area (replaces action buttons during enemy turn) -->
+    <div id="battle-continue-area"></div>
+
+    <!-- Action Buttons -->
+    <div class="battle-actions" id="battle-actions">
+      <button id="btn-attack" class="action-btn action-attack" onclick="playerAttack()">
+        <span class="action-icon">⚔️</span>
+        <span class="action-label">攻撃</span>
+        <span class="action-desc">ターゲットを攻撃</span>
+      </button>
+      <button id="btn-special" class="action-btn action-special" onclick="playerSpecial()">
+        <span class="action-icon">✨</span>
+        <span class="action-label">特技</span>
+        <span class="action-desc">固有スキルを発動</span>
+      </button>
+      <button id="btn-defend" class="action-btn action-defend" onclick="playerDefend()">
+        <span class="action-icon">🛡️</span>
+        <span class="action-label">防御</span>
+        <span class="action-desc">ダメージを半減</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ================================================
+       SCREEN 4: ROAD EVENT
+       ================================================ -->
+  <div id="screen-event" class="screen">
+    <div class="event-card">
+      <span class="event-icon" id="event-icon">📜</span>
+      <div class="event-title" id="event-title">イベント</div>
+      <div class="event-desc"  id="event-desc">イベントの説明</div>
+      <div class="event-effect" id="event-effect">効果</div>
+
+      <!-- Party HP Status -->
+      <div style="margin-bottom:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap" id="event-party-hp"></div>
+
+      <button id="event-next-round" class="btn btn-primary btn-lg btn-full" onclick="continueToNextBattle()">
+        次へ進む →
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 5: GAME CLEAR
+       ================================================ -->
+  <div id="screen-game-clear" class="screen">
+    <div class="result-card clear-card">
+      <div style="font-size:3rem;margin-bottom:8px">🏆</div>
+      <div class="result-title">GAME CLEAR!!</div>
+      <div class="result-subtitle">ボスを倒し、世界に平和が訪れた！</div>
+
+      <div class="result-party" id="clear-party-area"></div>
+
+      <div class="result-actions">
+        <button class="btn btn-outline btn-full" onclick="viewCompatibility()">
+          💞 勇者たちの相性を見る
+        </button>
+        <button class="btn btn-gold btn-full" onclick="returnToTitle()">
+          🏠 タイトルへ戻る
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 6: GAME OVER
+       ================================================ -->
+  <div id="screen-game-over" class="screen">
+    <div class="result-card over-card">
+      <div style="font-size:3rem;margin-bottom:8px">💀</div>
+      <div class="result-title">GAME OVER</div>
+      <div class="result-subtitle">パーティーは力尽きた...</div>
+
+      <div class="result-party" id="over-party-area"></div>
+
+      <div class="result-actions">
+        <button class="btn btn-danger btn-full" onclick="showScreen('char-select')">
+          🔄 もう一度挑戦する
+        </button>
+        <button class="btn btn-outline btn-full" onclick="returnToTitle()">
+          🏠 タイトルへ戻る
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 7: COMPATIBILITY VIEWER
+       ================================================ -->
+  <div id="screen-compatibility" class="screen">
+    <div class="compat-header">💞 相性一覧</div>
+    <div class="compat-note">
+      冒険で一緒に戦った仲間の相性データが解放されます<br>
+      <span style="color:var(--text-dim)">（相性◎ = 最良 / ○ = 良好 / △ = 要注意 / ✗ = 最悪）</span>
+    </div>
+
+    <div class="compat-grid" id="compat-grid" style="max-height:70vh;overflow-y:auto;padding:4px"></div>
+
+    <div style="margin-top:16px">
+      <button class="btn btn-outline btn-sm" onclick="showScreen('title')">← タイトルへ戻る</button>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCREEN 8: CREDITS
+       ================================================ -->
+  <div id="screen-credits" class="screen">
+    <div class="credits-card">
+      <div class="credits-title">📜 クレジット</div>
+      <div class="credits-rows">
+        <div class="credits-row">
+          <div class="credits-label">GAME DESIGN</div>
+          <div class="credits-value">あなた & チーム</div>
+        </div>
+        <div class="credits-divider"></div>
+        <div class="credits-row">
+          <div class="credits-label">MBTI DATA</div>
+          <div class="credits-value">MBTILIST_complete.xlsx</div>
+        </div>
+        <div class="credits-divider"></div>
+        <div class="credits-row">
+          <div class="credits-label">GAME SYSTEM</div>
+          <div class="credits-value">mbti_battle_idea.pptx</div>
+        </div>
+        <div class="credits-divider"></div>
+        <div class="credits-row">
+          <div class="credits-label">DEVELOPMENT</div>
+          <div class="credits-value">Web Game Lab</div>
+        </div>
+        <div class="credits-divider"></div>
+        <div class="credits-row">
+          <div class="credits-label">SPECIAL THANKS</div>
+          <div class="credits-value">16personalities.com</div>
+        </div>
+        <div class="credits-divider"></div>
+        <div class="credits-row">
+          <div class="credits-label">IMAGES</div>
+          <div class="credits-value">
+            キャラ立ち絵: images/characters/[MBTI].png<br>
+            <span style="font-size:0.75rem;color:var(--text-dim)">例: INTJ.png, ENFP.png...</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-full" onclick="showScreen('title')">← タイトルへ戻る</button>
+    </div>
+  </div>
+
+  <!-- Scripts (data first, then game logic) -->
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
