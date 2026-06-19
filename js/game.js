@@ -69,7 +69,7 @@ function showScreen(id) {
 // Promise を返し、クリックされるまで待機
 function waitForContinue(label = '▶ タップして続ける') {
   return new Promise(resolve => {
-    // compat event popup を残しつつ続けるボタンを追加
+    enableActions(false);
     const area = $('battle-continue-area');
     area.innerHTML = '';
     const btn = document.createElement('button');
@@ -81,6 +81,8 @@ function waitForContinue(label = '▶ タップして続ける') {
       resolve();
     };
     area.appendChild(btn);
+    // 必ず画面内に表示されるようスクロール
+    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
   });
 }
 
@@ -394,6 +396,11 @@ window.playerDefend = async function() {
 // ============================================
 // BATTLE TURN FLOW (クリック進行)
 // ============================================
+// 主人公が死んでいるか判定
+function isHeroDead() {
+  return GS.party.length > 0 && GS.partyHP[GS.party[0]] <= 0;
+}
+
 async function processAfterPlayerAction() {
   if (allEnemiesDead()) { await onBattleVictory(); return; }
 
@@ -401,9 +408,21 @@ async function processAfterPlayerAction() {
   await companionsTurn();
   if (allEnemiesDead()) { await onBattleVictory(); return; }
 
-  // MBTI Compatibility event (30% chance)
+  // MBTI Compatibility event (35% chance)
   if (Math.random() < 0.35) {
     await compatibilityEvent();
+
+    // ★ 相性イベントで主人公が倒れた → 即ゲームオーバー
+    if (isHeroDead()) {
+      addLog('💀 主人公が相性の衝突で力尽きた！勇者なき冒険はここで終わる...', 'debuff');
+      await delay(1800);
+      await onBattleDefeat();
+      return;
+    }
+    // 相性イベントで全敵を倒した場合
+    if (allEnemiesDead()) { await onBattleVictory(); return; }
+    // 相性イベントでパーティー全滅した場合
+    if (allPartyDead()) { await onBattleDefeat(); return; }
   }
 
   // ▶ 「敵のターンへ」ボタン表示 → クリック待ち
@@ -414,6 +433,14 @@ async function processAfterPlayerAction() {
 
   // Reset defense
   GS.party.forEach(t => { GS.partyStatus[t].defMult = 1.0; });
+
+  // ★ 敵の攻撃で主人公が倒れた → ゲームオーバー（仲間が生き残っていても）
+  if (isHeroDead()) {
+    addLog('💀 主人公がやられた！勇者なき冒険はここで幕を閉じた...', 'debuff');
+    await delay(1800);
+    await onBattleDefeat();
+    return;
+  }
 
   if (allPartyDead()) { await onBattleDefeat(); return; }
 
@@ -479,7 +506,7 @@ async function compatibilityEvent() {
   showCompatEventPopup(tmpl.title, tmpl.getDesc(a, b), level);
   addLog(`${tmpl.title} — ${tmpl.effectSummary(a, b)}`, 'event');
 
-  await delay(500);
+  await delay(200);
 
   // Apply effect
   await applyBattleCompatEffect(a, b, tmpl.key);
@@ -576,8 +603,13 @@ async function applyBattleCompatEffect(a, b, key) {
 
     // ----- 相性○ GOOD EVENTS -----
     case 'heal_b': {
-      healPartyMember(b, 20, iB);
-      addLog(`💚 ${a}の励ましで${b}のHPが20回復！`, 'heal');
+      // 死亡している場合は回復しない
+      if (GS.partyHP[b] <= 0) {
+        addLog(`💔 ${b}は倒れていて${a}の激励が届かない...`, 'debuff');
+      } else {
+        healPartyMember(b, 20, iB);
+        addLog(`💚 ${a}の激ましで${b}のHPが20回復！`, 'heal');
+      }
       break;
     }
     case 'ab_def_buff': {
@@ -641,7 +673,6 @@ async function applyBattleCompatEffect(a, b, key) {
       break;
     }
   }
-  await delay(200);
 }
 
 // compat event popup を表示
@@ -892,8 +923,16 @@ async function onBattleVictory() {
 }
 
 async function onBattleDefeat() {
+  // UI を即クリーン（操作不能ボタン・ポップアップを除去）
   enableActions(false);
-  addLog(`💀 パーティーは全滅した...`, 'system');
+  const ca = $('battle-continue-area');
+  if (ca) ca.innerHTML = '';
+  clearCompatPopup();
+
+  if (!isHeroDead()) {
+    // 主人公生存のまま全滅（念のため）
+    addLog('💀 パーティーは全滅した...', 'system');
+  }
   await delay(1500);
   showScreen('game-over');
   renderGameOver();
@@ -965,46 +1004,55 @@ function generatePartyRoadEvent() {
 
 function applyRoadEventEffect(event) {
   const e = event.effect;
+  // 死亡していないメンバーのみに回復を適用するヘルパー
+  const healAlive = (t, amt) => {
+    if (GS.partyHP[t] > 0)
+      GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + amt);
+  };
   switch (e.type) {
     case 'heal_all':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + e.amount); });
+      GS.party.forEach(t => healAlive(t, e.amount));
       break;
     case 'damage_all':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.amount); });
+      // ダメージは死亡者には当たらない
+      GS.party.forEach(t => { if (GS.partyHP[t] > 0) GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.amount); });
       break;
     case 'atk_buff_all':
       GS.pendingBuff = e.amount;
       break;
     case 'heal_and_atk_buff':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + e.heal); });
+      GS.party.forEach(t => healAlive(t, e.heal));
       GS.pendingBuff = e.atkBuff;
       break;
     case 'heal_and_def_buff':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + e.heal); });
+      GS.party.forEach(t => healAlive(t, e.heal));
       GS.pendingDefBuff = e.defBuff;
       break;
     case 'quarrel_night':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.damage); });
+      GS.party.forEach(t => { if (GS.partyHP[t] > 0) GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.damage); });
       GS.pendingBuff = e.atkDebuff;
       break;
     case 'heal_min_hp': {
-      let minIdx = 0, minHP = Infinity;
-      GS.party.forEach((t, i) => { if (GS.partyHP[t] < minHP) { minHP = GS.partyHP[t]; minIdx = i; } });
-      GS.partyHP[GS.party[minIdx]] = Math.min(GS.partyMaxHP[GS.party[minIdx]], GS.partyHP[GS.party[minIdx]] + e.amount);
+      // HP最少の「生存中」のメンバーを回復
+      let minIdx = -1, minHP = Infinity;
+      GS.party.forEach((t, i) => {
+        if (GS.partyHP[t] > 0 && GS.partyHP[t] < minHP) { minHP = GS.partyHP[t]; minIdx = i; }
+      });
+      if (minIdx >= 0) healAlive(GS.party[minIdx], e.amount);
       break;
     }
     case 'gamble':
       if (Math.random() < 0.5) {
-        GS.party.forEach(t => { GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + e.winHeal); });
-        event.effectText = `大当たり！全員のHPが${e.winHeal}回復した！`;
+        GS.party.forEach(t => healAlive(t, e.winHeal));
+        event.effectText = `大当たり！生存者のHPが${e.winHeal}回復した！`;
       } else {
-        GS.party.forEach(t => { GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.loseDamage); });
-        event.effectText = `大外れ...全員がHP${e.loseDamage}のダメージを受けた...`;
+        GS.party.forEach(t => { if (GS.partyHP[t] > 0) GS.partyHP[t] = Math.max(1, GS.partyHP[t] - e.loseDamage); });
+        event.effectText = `大外れ...生存者全員がHP${e.loseDamage}のダメージを受けた...`;
       }
       break;
     case 'heal_and_random_atk_buff':
-      GS.party.forEach(t => { GS.partyHP[t] = Math.min(GS.partyMaxHP[t], GS.partyHP[t] + e.heal); });
-      GS.pendingBuff = 1.1 + Math.random() * 0.15; // 1.1 ~ 1.25
+      GS.party.forEach(t => healAlive(t, e.heal));
+      GS.pendingBuff = 1.1 + Math.random() * 0.15;
       break;
     case 'enemy_def_pre_down':
       GS.pendingEnemyDefDown = true;
@@ -1251,6 +1299,8 @@ function updateStatusBadges(partyIdx) {
 }
 
 function healPartyMember(type, amount, idx) {
+  // 死亡しているキャラは回復しない
+  if (GS.partyHP[type] <= 0) return;
   GS.partyHP[type] = Math.min(GS.partyMaxHP[type], GS.partyHP[type] + amount);
   updatePartyHPBar(idx);
   showDmgFloat(`party-unit-${idx}`, `+${amount}`, 'dmg-heal');
