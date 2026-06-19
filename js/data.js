@@ -230,15 +230,15 @@ const MBTI_LIST = [
 
 // ----- Enemy Data -----
 const ENEMY_DATA = [
-  { id:"slime",       name:"スライム",   description:"ぷよぷよした謎の生き物", round:1, count:2, hp:70,  attack:13, defense:3,  color:"#48BB78", image:"images/enemies/enemy1.png", specials:[] },
-  { id:"goblin",      name:"ゴブリン",   description:"小賢しい山の悪戯者",     round:2, count:2, hp:95,  attack:19, defense:6,  color:"#68D391", image:"images/enemies/enemy2.png", specials:[{ name:"集団攻撃", damage:1.5, description:"2体で協力して攻撃！" }] },
-  { id:"orc",         name:"オーク",     description:"筋肉自慢の大型モンスター",round:3, count:1, hp:150, attack:28, defense:10, color:"#9AE6B4", image:"images/enemies/enemy3.png", specials:[{ name:"岩砕き",   damage:2.0, description:"強烈な一撃！" }] },
-  { id:"dark_knight", name:"闇の騎士",  description:"闇の力を纏った恐るべき戦士",round:4, count:1, hp:190, attack:35, defense:14, color:"#63B3ED", image:"images/enemies/enemy4.png", specials:[{ name:"闇の剣", damage:2.2, description:"必殺の一撃！" }, { name:"魂の吸収", damage:1.5, lifesteal:0.5, description:"ダメージの50%を回復！" }] }
+  { id:"slime",       name:"スライム",   description:"ぷよぷよした謎の生き物", round:1, count:2, hp:70,  attack:13, defense:3,  color:"#48BB78", image:"images/slimeA.png", specials:[] },
+  { id:"goblin",      name:"ゴブリン",   description:"小賢しい山の悪戯者",     round:2, count:2, hp:95,  attack:19, defense:6,  color:"#68D391", image:"images/goblinA.png", specials:[{ name:"集団攻撃", damage:1.5, description:"2体で協力して攻撃！" }] },
+  { id:"orc",         name:"オーク",     description:"筋肉自慢の大型モンスター",round:3, count:1, hp:150, attack:28, defense:10, color:"#9AE6B4", image:"images/oak.png", specials:[{ name:"岩砕き",   damage:2.0, description:"強烈な一撃！" }] },
+  { id:"dragon",      name:"ドラゴン",   description:"巨大な炎を吐く伝説の竜",   round:4, count:1, hp:220, attack:40, defense:16, color:"#E53E3E", image:"images/dragon.png", specials:[{ name:"灼熱のブレス", damage:2.2, description:"すべてを焼き尽くす炎！" }, { name:"竜の威圧", damage:0, debuff:true, description:"威圧感でこちらの攻撃力が下がる！" }] }
 ];
 
 const BOSS_DATA = {
   id:"maou", name:"大魔王", description:"全ての悪の根源。圧倒的な力でパーティーに立ちはだかる！",
-  hp:350, attack:42, defense:16, color:"#FC8181", image:"images/enemies/boss.png",
+  hp:350, attack:42, defense:16, color:"#FC8181", image:"images/DemonKing.png",
   specials:[
     { name:"魔王の咆哮", damage:1.8, description:"全体に大ダメージ！", allTarget:true },
     { name:"黒き炎",     damage:2.5, description:"一人に超強力な一撃！" },
