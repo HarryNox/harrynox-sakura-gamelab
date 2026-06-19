@@ -926,3 +926,49 @@ html, body {
   font-size: 0.8rem;
 }
 
+/* ============================================
+   TEST MODE UI
+   ============================================ */
+#test-mode-panel {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  padding: 12px;
+  z-index: 9999;
+  font-family: 'Courier New', Courier, monospace;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+#test-mode-panel h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.test-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 12px;
+}
+.test-mode-btn {
+  background: #222;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  cursor: pointer;
+  padding: 2px 8px;
+  font-weight: bold;
+  border-radius: 3px;
+}
+.test-mode-btn:hover {
+  background: #ef4444;
+  color: #000;
+}
+.test-mode-name {
+  color: #fff;
+  width: 50px;
+}
+

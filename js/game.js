@@ -9,7 +9,7 @@ const GS = {
   party: [],
   partyHP: {},
   partyMaxHP: {},
-  partyStatus: {},      // { type: { atkMult, defMult, shield, skip, doubleDmg, coverFor } }
+  partyStatus: {},      // { type: { atkMult, defMult, shield, skip, doubleDmg, coverFor, specialUses } }
   selectedSlot: 0,
   currentRound: 0,
   totalRounds: 5,
@@ -23,6 +23,7 @@ const GS = {
   pendingDefBuff: null,     // def multiplier carried to next battle
   pendingEnemyDefDown: false,
   unlockedPairs: new Set(),
+  testMode: false,
 };
 
 // ----- DOM -----
@@ -42,7 +43,67 @@ document.addEventListener('DOMContentLoaded', () => {
   showScreen('title');
   buildCharSelectScreen();
   $('gear-btn').addEventListener('click', openGearModal);
+  setupTestModeCheat();
 });
+
+// ----- Test Mode Cheat -----
+let cheatInput = "";
+const CHEAT_CODE = "runasandaisuki";
+function setupTestModeCheat() {
+  document.addEventListener('keydown', (e) => {
+    cheatInput += e.key;
+    if (cheatInput.length > CHEAT_CODE.length) {
+      cheatInput = cheatInput.slice(-CHEAT_CODE.length);
+    }
+    if (cheatInput === CHEAT_CODE) {
+      GS.testMode = !GS.testMode;
+      toggleTestMode();
+      cheatInput = "";
+    }
+  });
+}
+
+function toggleTestMode() {
+  const panel = $('test-mode-panel');
+  if (!panel) return;
+  if (GS.testMode) {
+    panel.style.display = 'block';
+    renderTestModePanel();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+function renderTestModePanel() {
+  const panel = $('test-mode-panel');
+  if (!panel || !GS.testMode) return;
+  let html = `<h3>🔧 TEST MODE</h3>`;
+  GS.party.forEach((type, idx) => {
+    if (!type) return;
+    html += `
+      <div class="test-mode-row">
+        <span class="test-mode-name">${type}</span>
+        <button class="test-mode-btn" onclick="testModeChangeHP('${type}', ${idx}, -50)">-50</button>
+        <button class="test-mode-btn" onclick="testModeChangeHP('${type}', ${idx}, 50)">+50</button>
+        <button class="test-mode-btn" onclick="testModeChangeHP('${type}', ${idx}, 999)">FULL</button>
+      </div>
+    `;
+  });
+  panel.innerHTML = html;
+}
+
+window.testModeChangeHP = function(type, idx, amount) {
+  if (amount === 999) {
+    GS.partyHP[type] = GS.partyMaxHP[type];
+  } else {
+    GS.partyHP[type] = Math.max(0, Math.min(GS.partyMaxHP[type], GS.partyHP[type] + amount));
+  }
+  updatePartyHPBar(idx);
+  if (GS.partyHP[type] > 0) {
+    const u = $(`party-unit-${idx}`);
+    if (u) u.classList.remove('dead-unit');
+  }
+};
 
 // ----- Starfield -----
 function buildStarfield() {
@@ -205,7 +266,7 @@ function departAdventure() {
 }
 
 function freshStatus() {
-  return { atkMult: 1.0, defMult: 1.0, shield: false, skip: false, doubleDmg: false, coverFor: null };
+  return { atkMult: 1.0, defMult: 1.0, shield: false, skip: false, doubleDmg: false, coverFor: null, specialUses: 5 };
 }
 
 // ============================================
@@ -245,6 +306,7 @@ function initBattle() {
   }
 
   renderBattleScreen();
+  if (GS.testMode) renderTestModePanel();
   const battleLabel = GS.isBossRound ? '⚠️ BOSS BATTLE' : `ROUND ${GS.currentRound + 1} / ${GS.totalRounds}`;
   addLog(`=== ${battleLabel} ===`, 'system');
   if (GS.isBossRound) addLog(`大魔王が現れた！！`, 'boss');
@@ -321,8 +383,10 @@ function updateSpecialBtnLabel() {
   const d = MBTI_DATA[heroType];
   const btn = $('btn-special');
   if (btn) {
+    const uses = GS.partyStatus[heroType].specialUses;
     btn.querySelector('.action-label').textContent = d.special.name;
-    btn.querySelector('.action-desc').textContent  = d.special.description;
+    btn.querySelector('.action-desc').textContent  = `${d.special.description} (残 ${uses}回)`;
+    btn.disabled = uses <= 0 || !GS.isPlayerTurn || GS.partyHP[heroType] <= 0;
   }
 }
 
@@ -332,10 +396,17 @@ function refreshTargeting() {
 
 function enableActions(enabled) {
   const heroDead = GS.partyHP[GS.party[0]] <= 0;
-  ['btn-attack','btn-special','btn-defend'].forEach(id => {
+  ['btn-attack','btn-defend'].forEach(id => {
     const b = $(id);
     if (b) b.disabled = !enabled || heroDead;
   });
+  
+  const spBtn = $('btn-special');
+  if (spBtn) {
+    const heroType = GS.party[0];
+    const uses = heroType ? GS.partyStatus[heroType].specialUses : 0;
+    spBtn.disabled = !enabled || heroDead || uses <= 0;
+  }
 }
 
 // ============================================
@@ -366,11 +437,15 @@ window.playerAttack = async function() {
 
 window.playerSpecial = async function() {
   if (!GS.isPlayerTurn || GS.isAnimating) return;
-  if (GS.partyHP[GS.party[0]] <= 0) return;
+  const heroType = GS.party[0];
+  if (GS.partyHP[heroType] <= 0 || GS.partyStatus[heroType].specialUses <= 0) return;
+  
   enableActions(false);
   GS.isAnimating = true;
 
-  const heroType = GS.party[0];
+  GS.partyStatus[heroType].specialUses--;
+  updateSpecialBtnLabel();
+
   const d = MBTI_DATA[heroType];
   addLog(`✨ ${heroType}(${d.name})の特技「${d.special.name}」！`, 'buff');
   await animSpecial(`party-sprite-wrap-0`);
@@ -468,7 +543,8 @@ async function companionsTurn() {
     const d = MBTI_DATA[type];
     await delay(200);
 
-    if (Math.random() < 0.25) {
+    if (Math.random() < 0.25 && GS.partyStatus[type].specialUses > 0) {
+      GS.partyStatus[type].specialUses--;
       addLog(`✨ ${type}(${d.name})の特技「${d.special.name}」！`, 'buff');
       await animSpecial(`party-sprite-wrap-${i}`);
       await applySpecial(type, d.special, false);

@@ -113,7 +113,7 @@ const MBTI_DATA = {
     description: "几帳面で責任感の塊。ルールと事実を大切にする信頼の番人",
     group: "SJ", color: "#F59E0B", bgColor: "#451A03",
     stats: { hp: 120, attack: 22, defense: 18 },
-    special: { name: "鉄壁守備", description: "次のターン、パーティー全体が受けるダメージをゼロにする", type: "party_shield", power: 1 },
+    special: { name: "鉄壁守備", description: "次のターン、パーティー全体が受けるダメージを半減する", type: "party_def_buff", power: 2.0 },
     compatibility: {
       best:    { type: "ESTP", reason: "行動力と安定感が見事に噛み合う" },
       good:    { type: "ESFP", reason: "賑やかさとルールで補い合える" },
