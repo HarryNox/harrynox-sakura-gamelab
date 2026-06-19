@@ -382,11 +382,16 @@ function updateSpecialBtnLabel() {
   if (!heroType) return;
   const d = MBTI_DATA[heroType];
   const btn = $('btn-special');
+  const badge = $('special-badge');
   if (btn) {
     const uses = GS.partyStatus[heroType].specialUses;
     btn.querySelector('.action-label').textContent = d.special.name;
-    btn.querySelector('.action-desc').textContent  = `${d.special.description} (残 ${uses}回)`;
+    btn.querySelector('.action-desc').textContent  = d.special.description;
     btn.disabled = uses <= 0 || !GS.isPlayerTurn || GS.partyHP[heroType] <= 0;
+    if (badge) {
+      badge.textContent = `残 ${uses} 回`;
+      badge.style.background = uses > 0 ? '#f59e0b' : '#6b7280';
+    }
   }
 }
 
@@ -1280,18 +1285,39 @@ function openGearModal() {
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="modal-title">⚙️ 設定</div>
-      <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.7">
+      <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:15px;line-height:1.7">
         解放済みの相性データはブラウザに自動保存されます。<br>
         データを削除すると相性一覧が初期化されます。
       </div>
+      <div class="modal-actions" style="flex-direction:column; gap:10px; margin-bottom: 20px;">
+        <button class="btn btn-primary" onclick="returnToTitleFromGear()">🏠 タイトルへ戻る</button>
+        <button class="btn btn-danger" onclick="clearSaveData()">🗑️ セーブデータを消去</button>
+      </div>
+      
+      <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; margin-bottom:15px;">
+        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:5px;">秘密のあいことば</div>
+        <input type="password" id="gear-password" placeholder="あいことばを入力" style="width:100%; padding:8px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; border-radius:4px; text-align:center;">
+      </div>
+
       <div class="modal-actions">
-        <button class="btn btn-danger" onclick="clearSaveData()">セーブデータを消去</button>
-        <button class="btn btn-outline" onclick="closeGearModal()">閉じる</button>
+        <button class="btn btn-outline btn-full" onclick="closeGearModal()">閉じる</button>
       </div>
     </div>
   `;
   overlay.addEventListener('click', e => { if (e.target === overlay) closeGearModal(); });
   document.body.appendChild(overlay);
+
+  const pwdInput = $('gear-password');
+  if (pwdInput) {
+    pwdInput.addEventListener('input', (e) => {
+      if (e.target.value === 'runasandaisuki') {
+        GS.testMode = true;
+        toggleTestMode();
+        e.target.value = '';
+        addLog('🔧 テストモードが有効化されました', 'system');
+      }
+    });
+  }
 }
 window.closeGearModal = function() { const m = $('gear-modal'); if (m) m.remove(); };
 window.clearSaveData = function() {
@@ -1299,6 +1325,10 @@ window.clearSaveData = function() {
   GS.unlockedPairs.clear();
   closeGearModal();
   alert('セーブデータを消去しました。');
+};
+window.returnToTitleFromGear = function() {
+  closeGearModal();
+  returnToTitle(); // game.js 内の既存関数
 };
 
 // ============================================

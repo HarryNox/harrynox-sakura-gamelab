@@ -23,7 +23,7 @@
       <h1>MBTI<br>Battle Quest</h1>
       <div class="subtitle">MBTIタイプで冒険する RPG</div>
       <div class="mbti-badge">16 PERSONALITIES × FANTASY RPG</div>
-      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">ver 1.1</div>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">ver 1.2</div>
     </div>
 
     <div class="title-buttons">
@@ -133,10 +133,11 @@
         <span class="action-label">攻撃</span>
         <span class="action-desc">ターゲットを攻撃</span>
       </button>
-      <button id="btn-special" class="action-btn action-special" onclick="playerSpecial()">
+      <button id="btn-special" class="action-btn action-special" onclick="playerSpecial()" style="position:relative;">
         <span class="action-icon">✨</span>
         <span class="action-label">特技</span>
         <span class="action-desc">固有スキルを発動</span>
+        <div id="special-badge" style="position:absolute; top:-12px; right:10px; background:#f59e0b; color:#fff; font-size:0.75rem; padding:2px 8px; border-radius:12px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.5); border:1px solid #fff; pointer-events:none;">残 5 回</div>
       </button>
       <button id="btn-defend" class="action-btn action-defend" onclick="playerDefend()">
         <span class="action-icon">🛡️</span>
