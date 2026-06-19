@@ -1338,8 +1338,8 @@ function makeSpriteHTML(type, imgId) {
   const d = MBTI_DATA[type];
   return `
     <div class="char-sprite">
-      <img src="images/characters/${type}.png" id="${imgId}" alt="${type}"
-           style="width:100%;height:100%;object-fit:contain;border-radius:inherit"
+      <img src="images/${type}.png" id="${imgId}" alt="${type}"
+           style="width:100%;height:100%;object-fit:contain;border-radius:inherit;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5));"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="char-sprite-placeholder" style="display:none;background:linear-gradient(135deg,${d.bgColor},${d.color}44)">
         <span class="sp-code" style="color:${d.color}">${type}</span>
@@ -1351,8 +1351,13 @@ function makeSpriteHTML(type, imgId) {
 
 function makeEnemySpriteHTML(enemy) {
   const c = enemy.color || '#888';
+  let imgPath = enemy.image;
+  // If there are multiple enemies of the same type, use variant B for the 2nd one
+  if (enemy.id.endsWith('_1')) {
+    imgPath = imgPath.replace('A.png', 'B.png');
+  }
   return `
-    <img src="${enemy.image}" alt="${enemy.name}" style="width:100%;height:100%;object-fit:contain"
+    <img src="${imgPath}" alt="${enemy.name}" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5));"
          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
     <div style="display:none;width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,${c}55);border-radius:inherit;align-items:center;justify-content:center;flex-direction:column;gap:4px">
       <span style="font-size:2rem">👾</span><span style="font-size:0.65rem;color:${c}">${enemy.name}</span>
