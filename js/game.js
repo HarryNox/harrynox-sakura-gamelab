@@ -1501,15 +1501,14 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ----- LocalStorage -----
 function saveProgress() {
-  localStorage.setItem('mbti_battle_pairs', JSON.stringify(Array.from(GS.unlockedPairs)));
+  // localStorage.setItem('mbti_battle_pairs', JSON.stringify(Array.from(GS.unlockedPairs)));
 }
 function loadProgress() {
-  try {
-    const saved = localStorage.getItem('mbti_battle_pairs');
-    if (saved) GS.unlockedPairs = new Set(JSON.parse(saved));
-  } catch (e) { GS.unlockedPairs = new Set(); }
+  // try {
+  //   const saved = localStorage.getItem('mbti_battle_pairs');
+  //   if (saved) GS.unlockedPairs = new Set(JSON.parse(saved));
+  // } catch (e) { GS.unlockedPairs = new Set(); }
 }
 function unlockPairs(party) {
   party.filter(Boolean).forEach(type => GS.unlockedPairs.add(type));
-  saveProgress();
 }
