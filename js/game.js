@@ -146,8 +146,13 @@ function waitForContinue(label = '▶ タップして続ける') {
       resolve();
     };
     area.appendChild(btn);
-    // 必ず画面内に表示されるようスクロール
-    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    // 必ず画面内に表示されるようスクロール（iOS/iframe対応のためコンテナ自体をスクロール）
+    setTimeout(() => {
+      const sb = document.getElementById('screen-battle');
+      if (sb) {
+        sb.scrollTop = sb.scrollHeight + 100;
+      }
+    }, 50);
   });
 }
 

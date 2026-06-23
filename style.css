@@ -841,6 +841,7 @@ html, body {
   display: block;
   width: 100%;
   padding: 14px 24px;
+  margin-bottom: 24px;
   background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.05) 100%);
   border: 1.5px solid var(--accent-purple);
   border-radius: 12px;
