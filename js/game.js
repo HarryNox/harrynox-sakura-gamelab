@@ -37,6 +37,10 @@ const el = (tag, cls, html) => {
 
 // ----- Init -----
 document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const mode = urlParams.get('mode') || 'pc';
+  document.body.classList.add(`mode-${mode}`);
+
   buildStarfield();
   loadProgress();
   initTitleScreen();

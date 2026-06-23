@@ -972,3 +972,51 @@ html, body {
   width: 50px;
 }
 
+/* =============================================
+   Mobile Mode Specific Styles
+   ============================================= */
+body.mode-mobile {
+  overflow-y: auto !important; /* Allow scroll on mobile */
+  font-size: 16px;
+}
+body.mode-mobile .screen {
+  overflow-y: auto;
+  justify-content: flex-start; /* Prevent cut-off at top */
+  padding: 40px 10px;
+}
+body.mode-mobile .char-card {
+  width: 130px;
+  min-height: 160px;
+  margin: 5px;
+}
+body.mode-mobile .char-name {
+  font-size: 18px;
+}
+body.mode-mobile .char-type {
+  font-size: 16px;
+}
+body.mode-mobile .btn {
+  padding: 16px 32px;
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+body.mode-mobile #battle-container {
+  max-width: 100vw;
+  width: 100%;
+}
+body.mode-mobile .battle-card {
+  width: 100px;
+}
+body.mode-mobile .card-name {
+  font-size: 14px;
+}
+body.mode-mobile .hud-stat {
+  font-size: 14px;
+}
+body.mode-mobile #action-menu {
+  gap: 12px;
+}
+body.mode-mobile .action-btn {
+  font-size: 16px;
+  padding: 14px 10px;
+}
